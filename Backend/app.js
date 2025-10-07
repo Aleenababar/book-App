@@ -23,5 +23,19 @@ app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "../Frontend/build", "index.html"));
 });
 
+
+const helmet = require("helmet");
+
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      styleSrc: ["'self'", "https://fonts.googleapis.com"]
+    }
+  }
+}));
+
+
 const PORT =1000;
 app.listen(PORT,()=>(console.log("server started")));
