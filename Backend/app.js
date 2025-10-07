@@ -1,31 +1,14 @@
 const express = require("express");
 const app = express();
-require ("dotenv").config();
-const conn = require("./conn/conn");
-const cors =require("cors");
-const UserAPI = require("./routes/user");
-const TaskAPI =require("./routes/task");
+require("dotenv").config();
+const cors = require("cors");
 const path = require("path");
-
-// Serve frontend build (React)
-app.use(express.static(path.join(__dirname, "../frontend/build")));
-
-
-
-app.use (cors());
-app.use(express.json());
-conn();
-app.use("/api/v1", UserAPI);
-// localhost:1000/api/v1/sign-in 
-app.use("/api/v2", TaskAPI);
-// For SPA routing
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../Frontend/build", "index.html"));
-});
-
-
+const conn = require("./conn/conn");
+const UserAPI = require("./routes/user");
+const TaskAPI = require("./routes/task");
 const helmet = require("helmet");
 
+// Security headers
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
@@ -36,6 +19,25 @@ app.use(helmet({
   }
 }));
 
+// Connect to database
+conn();
 
-const PORT =1000;
-app.listen(PORT,()=>(console.log("server started")));
+// Middleware
+app.use(cors());
+app.use(express.json());
+
+// API routes
+app.use("/api/v1", UserAPI);
+app.use("/api/v2", TaskAPI);
+
+// Serve React frontend
+const frontendBuildPath = path.join(__dirname, "../Frontend/build");
+app.use(express.static(frontendBuildPath));
+
+// SPA routing: serve index.html for all other routes
+app.get("*", (req, res) => {
+  res.sendFile(path.join(frontendBuildPath, "index.html"));
+});
+
+// Export app for Vercel
+module.exports = app;
