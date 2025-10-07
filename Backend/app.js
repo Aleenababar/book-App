@@ -31,7 +31,7 @@ app.use("/api/v1", UserAPI);
 app.use("/api/v2", TaskAPI);
 
 // Serve React frontend
-const frontendBuildPath = path.join(__dirname, "../Frontend/build");
+const frontendBuildPath = path.join(__dirname, "./Frontend/build");
 app.use(express.static(frontendBuildPath));
 
 // SPA routing: serve index.html for all other routes
