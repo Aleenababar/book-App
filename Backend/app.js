@@ -1,43 +1,24 @@
 const express = require("express");
-const app = express();
-require("dotenv").config();
-const cors = require("cors");
 const path = require("path");
-const conn = require("./conn/conn");
-const UserAPI = require("./routes/user");
-const TaskAPI = require("./routes/task");
-const helmet = require("helmet");
+const cors = require("cors");
 
-// Security headers
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      fontSrc: ["'self'", "https://fonts.gstatic.com"],
-      styleSrc: ["'self'", "https://fonts.googleapis.com"]
-    }
-  }
-}));
+const app = express();
 
-// Connect to database
-conn();
-
-// Middleware
 app.use(cors());
 app.use(express.json());
 
-// API routes
-app.use("/api/v1", UserAPI);
-app.use("/api/v2", TaskAPI);
+// ✅ Serve frontend build
+const frontendPath = path.join(__dirname, "Frontend", "build");
+app.use(express.static(frontendPath));
 
-// Serve React frontend
-const frontendBuildPath = path.join(__dirname, "./Frontend/build");
-app.use(express.static(frontendBuildPath));
-
-// SPA routing: serve index.html for all other routes
-app.get("*", (req, res) => {
-  res.sendFile(path.join(frontendBuildPath, "index.html"));
+app.get("/api/test", (req, res) => {
+  res.json({ message: "Backend is running fine!" });
 });
 
-// Export app for Vercel
-module.exports = app;
+// ✅ For all other routes, serve the React app
+app.get("*", (req, res) => {
+  res.sendFile(path.join(frontendPath, "index.html"));
+});
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
