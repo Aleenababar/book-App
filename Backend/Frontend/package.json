@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "backend": "file:..",
+    "build": "^0.1.4",
+    "npm": "^11.6.2",
+    "run": "^1.5.0"
+  }
+}
